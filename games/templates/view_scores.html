@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN" crossorigin="anonymous">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-C6RzsynM9kWDrMNeT87bh95OGNyZPhcTNXj1NW7RuBCsyN/o0jlpcV8Qyq46cDfL" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.min.js" integrity="sha384-BBtl+eGJRgqQAUMxJ7pMwbEyER4l1g+O15P+16Ep7Q9Q+zqX6gSbd85u4mG4QzX+" crossorigin="anonymous"></script>
+    <meta charset="UTF-8">
+    <title>Scorigami</title>
+    <script>
+        function handleFormSubmit(event) {
+            event.preventDefault();
+            const winnerInput = document.getElementById('winner').value;
+            const loserInput = document.getElementById('loser').value;
+            const teamInput = document.getElementById('team').value;
+            if (winnerInput && loserInput) {
+              let url = `/view_scores/${winnerInput}/${loserInput}/`;
+              if (teamInput) {
+                url += `?team=${teamInput}`;
+              }
+              window.location.href = url;
+            } else {
+              alert('Please fill in both scores');
+            }
+        }
+    </script>
+    <style>
+        .list-group-item {
+            margin-left: 25%;
+            margin-right: 25%;
+        }
+        
+        h1 {
+            margin-top:25px;
+            text-align: center;
+        }
+        
+        h4 {
+          text-align: center;
+        }
+
+        .error-code {
+            font-size: 2rem;
+            text-align: center;
+            color: rgb(241, 88, 88);
+        }
+        
+        .btn-primary {
+            background-color: rgb(69, 143, 212);
+            width: auto;
+        }
+        .input-group {
+            width: auto;
+            margin-left: 30%;
+            margin-right: 30%;
+        }
+        
+        @media screen and (max-width: 768px) {
+            .input-group {
+                width: auto;
+                margin-left: 10%;
+                margin-right: 10%;
+            }
+            .list-group-item {
+                margin-left:5%;
+                margin-right: 5%;
+            }
+        }
+        
+        .main {
+            text-align: center;
+        }
+
+        #scoreForm {
+          padding: 30px;
+        }
+        </style>
+  </head>
+  <body>
+    <nav class="navbar navbar-expand-lg bg-body-tertiary">
+        <div class="container-fluid">
+          <a class="navbar-brand" href="/home">Scorigami</a>
+          <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarText" aria-controls="navbarText" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+          </button>
+          <div class="collapse navbar-collapse" id="navbarText">
+            <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+              <li class="nav-item">
+                <a class="nav-link"  href="/home">Home</a>
+              </li>
+              <li class="nav-item">
+                <a class="nav-link active" aria-current="page" href="/score_lookup">Score Researcher</a>
+              </li>
+            </ul>
+            <span class="navbar-text">
+              igami your life
+            </span>
+          </div>
+        </div>
+      </nav>
+    <h1 class="text-color">Games Scored {{ higher_score }} : {{ lower_score }}</h1>
+    {% if games|length == 1%}
+    <h4 class="text-color">There is {{ games|length }} game with this score</h4>
+    {% elif games|length > 1 %}
+    <h4 class="text-color">There are {{ games|length }} games with this score</h4>
+    {% endif %}
+    <div class="page-content page-container" id="page-content">
+        <ul class="list-group list-group-unnumbered">
+            {% if games %}
+            {% for game in games %}
+            <li class="list-group-item d-flex justify-content-between align-items-start">
+                <div class="ms-2 me-auto">
+                  <div class="fw-bold">{{game.winner}} {{ game.higher_score }} - {{ game.loser }} {{ game.lower_score }}</div>
+                  {{ game.date }}
+                </div>
+              </li>
+            {% endfor %}
+            {% elif lower_score > higher_score %}
+            <p class="error-code">The loser cant have more points than the winner!</p>
+            {% else %}
+            <p class="error-code">Sorry! No games with this score.</p>
+            {% endif %}
+        </ul>
+   </div>
+   <div class="main">
+    <form id="scoreForm" onsubmit="handleFormSubmit(event)">
+      <h3>See more games</h3>
+      <p>If you would like to filter games by only ones with a specific participating team, please add that team into the team field.</p>
+      <div class="input-group mb-3">
+        <input type="text" class="form-control" placeholder="Team (Optional)" aria-label="team", id="team">
+      </div>
+        <div class="input-group mb-3">
+            <input type="text" class="form-control" placeholder="Winner Score" aria-label="winner", id="winner">
+            <span class="input-group-text">-</span>
+            <input type="text" class="form-control" placeholder="Loser Score" aria-label="loser", id="loser">
+        </div>
+        <input type="submit" class="form-control btn btn-primary" value="Submit">
+    </form>
+</div>
+  </body>
+</html>
