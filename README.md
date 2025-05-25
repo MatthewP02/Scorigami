@@ -3,5 +3,5 @@ College Football Scorigami is the accumulation of all college football scores si
 
 You can check out the website using this very Django code here: https://www.cfbscorigami.com/home/
 
-Note: newScoreChecker and collegeupdate were built to continually update the database as new scores occur, as well as tweet for scorigamis, follow my twitter for College Football Scorigami updates!
+Note: new scripts were built to update the database as new scores occur, as well as tweet for scorigamis, follow my twitter for College Football Scorigami updates!
 @CFBScorigami_
