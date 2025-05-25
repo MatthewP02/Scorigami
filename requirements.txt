@@ -1,0 +1,12 @@
+discord_webhook==1.4.1
+Django==4.2.16
+joblib==1.4.2
+matplotlib==3.10.3
+mplcursors==0.6
+numpy==2.2.6
+pandas==2.2.3
+Pillow==11.2.1
+python-dotenv==1.1.0
+Requests==2.32.3
+scikit_learn==1.6.1
+tweepy==4.15.0

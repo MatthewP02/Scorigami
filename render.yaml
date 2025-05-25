@@ -1,0 +1,15 @@
+services:
+  - type: web
+    name: scorigami
+    env: python
+    buildCommand: "./build.sh"
+    startCommand: "gunicorn Scorigami.wsgi:application"
+    envVars:
+      - key: PYTHON_VERSION
+        value: 3.9.6
+      - key: DJANGO_SETTINGS_MODULE
+        value: Scorigami.settings
+    disk:
+      name: sqlite-data
+      mountPath: /opt/render/project/src
+      sizeGB: 1 
