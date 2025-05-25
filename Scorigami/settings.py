@@ -29,7 +29,7 @@ SECRET_KEY = os.getenv('DJANGO_SECRET')
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = False
 
-ALLOWED_HOSTS = ['localhost', '127.0.0.1', '172.105.157.166', 'cfbscorigami.com', 'www.cfbscorigami.com']
+ALLOWED_HOSTS = ['scorigami-ntx3.onrender.com', 'scorigami-ntx3.onrender.com', 'cfbscorigami.com', 'www.cfbscorigami.com']
 
 # Application definition
 
