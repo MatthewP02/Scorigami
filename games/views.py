@@ -41,7 +41,7 @@ def home(request):
     return render(request, 'home.html', context)
 
 def grid(request):
-    file_path = os.path.join(settings.BASE_DIR,'static','Scorigami.json')
+    file_path = os.path.join(settings.BASE_DIR,'staticfiles','Scorigami.json')
     with open(file_path, 'r') as f:
         data = json.load(f)
     return JsonResponse(data)
