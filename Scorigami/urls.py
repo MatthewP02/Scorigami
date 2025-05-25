@@ -22,7 +22,6 @@ from games import views
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('view_scores/<int:higher_score>/<int:lower_score>/', views.view_scores, name='view_scores'),
-    path('get_latest_game/<int:winner_score>/<int:loser_score>/', views.get_latest_game, name='get latest game'),
     path('home/', views.home, name='Home'),
     path('', RedirectView.as_view(url='/home/')),
     path('grid/', views.grid, name='Grid'),

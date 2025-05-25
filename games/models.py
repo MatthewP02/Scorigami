@@ -1,12 +1,13 @@
 from django.db import models
 
-# Create your models here.
+class FootballTeam(models.Model):
+    name = models.CharField(max_length=255)
+    team_id = models.IntegerField(unique=True)
+
 class FootballGame(models.Model):
+    game_id = models.IntegerField(unique=True)
     lower_score = models.IntegerField()
     higher_score = models.IntegerField()
     date = models.DateField()
-    loser = models.CharField(max_length=100)
-    winner = models.CharField(max_length=100)
-
-    def __str__(self):
-        return f"{self.date}: {self.winner} ({self.higher_score}) vs {self.loser} ({self.lower_score})"
+    loser = models.ForeignKey(FootballTeam, related_name='losing_games', on_delete=models.CASCADE)
+    winner = models.ForeignKey(FootballTeam, related_name='winning_games', on_delete=models.CASCADE)

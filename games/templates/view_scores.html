@@ -94,7 +94,7 @@
               </li>
             </ul>
             <span class="navbar-text">
-              igami your life
+              <a href="https://www.twitter.com/CFBScorigami_" target="_blank">Twitter</a>
             </span>
           </div>
         </div>
@@ -111,7 +111,7 @@
             {% for game in games %}
             <li class="list-group-item d-flex justify-content-between align-items-start">
                 <div class="ms-2 me-auto">
-                  <div class="fw-bold">{{game.winner}} {{ game.higher_score }} - {{ game.loser }} {{ game.lower_score }}</div>
+                  <div class="fw-bold"><span class="fw-normal">{{ game.winner.name }}</span> {{ game.higher_score }} - <span class="fw-normal">{{ game.loser.name }}</span> {{ game.lower_score }}</div>
                   {{ game.date }}
                 </div>
               </li>

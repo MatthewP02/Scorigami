@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import FootballGame  # Change to the name of your model
+from .models import FootballGame
 
 class FootballAdmin(admin.ModelAdmin):
 	list_filter = ['date']

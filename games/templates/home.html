@@ -7,10 +7,30 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN" crossorigin="anonymous">
     <title>Scorigami</title>
     <style>
-      .overflow-x-auto {
-        margin-left: 5%;
-        margin-right: 5%;
-        overflow: auto;
+      /* Main container styling */
+      .main {
+        text-align: center;
+      }
+
+      /* Style for the Plotly chart container */
+      .plotly-container {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        width: 100%; /* Full width */
+        margin-left: auto;
+        margin-right: auto;
+      }
+
+      /* Style for Plotly chart to ensure it is responsive */
+      #plotly-chart {
+        max-height: 100%;
+        max-width: 100%;
+      }
+      /* Wrapper for scrollable chart */
+      .scrollable-container {
+        overflow-x: auto;
+        width: 100%;
       }
 
         /* The CSS rules within this media query will only apply on screens with a max width of 768px */
@@ -40,105 +60,104 @@
         }
     </style>
     <script>
-    function plotChart() {
-      fetch('/grid')
-        .then(response => response.json())
-        .then(data => {
-          let grid = data.grid;
-          grid = grid.map(row => row.slice(0, 163));
-          let hoverText = data.hover_text;
-          
-          // Your logic for creating hover_text and unique_scores
-          for (let i = 0; i < grid.length; i++) {
-            for (let j = 0; j < grid[i].length; j++) {
-              if (grid[i][j] === 1 && i > j) {
-                hoverText[i][j] = `The loser cant have more points than the winner!`;
-              }else if (grid[i][j] === 1) {
-                hoverText[i][j] = 'Score is impossible';
-              }else {
-                const games = Math.round(grid[i][j] * 10000);
-                if (games === 0) {
-                  hoverText[i][j] = 'No games here yet!';
-                } else if (games === 1) {
-                  hoverText[i][j] = 'There has been 1 game with this score.<br>To view all scores, go to Score Researcher tab';
-                } else {
-                  hoverText[i][j] = `There have been ${games} games with this score<br>To view all scores, go to Score Researcher tab`;
+      function plotChart() {
+        fetch('/grid')
+          .then(response => response.json())
+          .then(data => {
+            let grid = data.grid;
+            grid = grid.map(row => row.slice(0, 166));
+            let hoverText = data.hover_text;
+            
+            // Your logic for creating hover_text and unique_scores
+            for (let i = 0; i < grid.length; i++) {
+              for (let j = 0; j < grid[i].length; j++) {
+                if (grid[i][j] === 1 && i > j) {
+                  hoverText[i][j] = 'The loser cant have more points than the winner!';
+                }else if (grid[i][j] === 1) {
+                  hoverText[i][j] = 'Score is impossible';
+                }else {
+                  const games = Math.round(grid[i][j] * 10000);
+                  if (games === 0) {
+                    hoverText[i][j] = 'No games here yet!';
+                  } else if (games === 1) {
+                    hoverText[i][j] = 'There has been 1 game with this score.<br>To view all scores, go to Score Researcher tab';
+                  } else {
+                    hoverText[i][j] = `There have been ${games} games with this score<br>To view all scores, go to Score Researcher tab`;
+                  }
+                }
+                
+                if (i === j && grid[i][j] === 0) {
+                  hoverText[i][j] = 'Score is no longer possible';
+                  grid[i][j] = 1;
                 }
               }
-              
-              if (i === j && grid[i][j] === 0) {
-                hoverText[i][j] = 'Score is no longer possible';
-                grid[i][j] = 1;
+            }
+            
+            // Calculate unique_scores (optional)
+            let uniqueScores = 0;
+            for (let i = 0; i < grid.length; i++) {
+              for (let j = 0; j < grid[i].length; j++) {
+                if (grid[i][j] >= 0.0001 && grid[i][j] <= 0.9999) {
+                  uniqueScores++;
+                }
               }
             }
-          }
-          
-          // Calculate unique_scores (optional)
-          let uniqueScores = 0;
-          for (let i = 0; i < grid.length; i++) {
-            for (let j = 0; j < grid[i].length; j++) {
-              if (grid[i][j] >= 0.0001 && grid[i][j] <= 0.9999) {
-                uniqueScores++;
-              }
-            }
-          }
-
-          let maxValue = Math.max(...grid.flat().filter(value => value <= 0.9999));
-
-          // Plotting
-          const info = [{
-            z: grid,
-            text: hoverText,
-            type: 'heatmap',
-            hoverinfo: 'z+text',
-            hovertemplate: '%{x}:%{y}<br>%{text}<extra></extra>',
-            colorscale: [
-                [0, 'rgb(255,255,255)'], 
-                [0.0001, 'rgb(211, 255, 194)'], 
-                [maxValue, 'rgb(68, 235, 2)'],
-                [maxValue + 0.01, 'rgb(0,0,0)'], 
-                [1, 'rgb(0,0,0)']
-            ],
-            showscale: false
-          }];
-          
-          // resizes grid dependent on width
-          const n = grid.length;
-          const m = grid[0].length;
-          const containerWidth = 1600;
-          const calculatedHeight = (n / m) * containerWidth;
-
-          const layout = {
-            title: `College Football Scorigami, ${uniqueScores} unique scores`,
-            xaxis: {
-              tickvals: [...Array(grid[0].length).keys()],
-              ticktext: [...Array(grid[0].length).keys()],
-              tickfont: { size: 8 },
-              title: 'Winning Team Score',
-              side: 'top',
-              title_standoff: 15,
-              fixedrange: true
-            },
-            yaxis: {
-              tickvals: [...Array(grid.length).keys()],
-              ticktext: [...Array(grid.length).keys()],
-              tickfont: { size: 8 },
-              autorange: 'reversed',
-              title: 'Losing Team Score',
-              fixedrange: true
-            },
-            width: containerWidth,
-            height: calculatedHeight,
-            autosize: false,
-            margin: { l: 50, r: 50, b: 100, t: 150, pad: 4 },
-            dragmode: false,
-          };
-          
-          Plotly.newPlot('plotly-chart', info, layout)
-        });
-    }
-
-    plotChart();
+  
+            let maxValue = Math.max(...grid.flat().filter(value => value <= 0.9999));
+  
+            // Plotting
+            const info = [{
+              z: grid,
+              text: hoverText,
+              type: 'heatmap',
+              hoverinfo: 'z+text',
+              hovertemplate: '%{x}:%{y}<br>%{text}<extra></extra>',
+              colorscale: [
+                  [0, 'rgb(255,255,255)'], 
+                  [0.0001, 'rgb(211, 255, 194)'], 
+                  [maxValue, 'rgb(68, 235, 2)'],
+                  [maxValue + 0.01, 'rgb(0,0,0)'], 
+                  [1, 'rgb(0,0,0)']
+              ],
+              showscale: false
+            }];
+            
+            // resizes grid dependent on width
+            const n = grid.length;
+            const m = grid[0].length;
+            const containerWidth = 1600;
+            const calculatedHeight = (n / m) * containerWidth;
+  
+            const layout = {
+              xaxis: {
+                tickvals: [...Array(grid[0].length).keys()],
+                ticktext: [...Array(grid[0].length).keys()],
+                tickfont: { size: 8 },
+                title: 'Winning Team Score',
+                side: 'top',
+                title_standoff: 15,
+                fixedrange: true
+              },
+              yaxis: {
+                tickvals: [...Array(grid.length).keys()],
+                ticktext: [...Array(grid.length).keys()],
+                tickfont: { size: 8 },
+                autorange: 'reversed',
+                title: 'Losing Team Score',
+                fixedrange: true
+              },
+              width: containerWidth,
+              height: calculatedHeight,
+              autosize: false,
+              margin: { l: 50, r: 50, b: 100, t: 150, pad: 4 },
+              dragmode: false,
+            };
+            
+            Plotly.newPlot('plotly-chart', info, layout)
+          });
+      }
+  
+      plotChart();
     </script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-C6RzsynM9kWDrMNeT87bh95OGNyZPhcTNXj1NW7RuBCsyN/o0jlpcV8Qyq46cDfL" crossorigin="anonymous"></script>
     <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.8/dist/umd/popper.min.js" integrity="sha384-I7E8VVD/ismYTF4hNIPjVp/Zjvgyol6VFvRkX/vR+Vc4jQkC+hVqc2pM8ODewa9r" crossorigin="anonymous"></script>
@@ -161,21 +180,24 @@
                   </li>
                 </ul>
                 <span class="navbar-text">
-                  igami your life
+                  <a href="https://www.twitter.com/CFBScorigami_" target="_blank">Twitter</a>
                 </span>
               </div>
             </div>
           </nav>
     <div class="main">
       <h3>College Football Scorigami, Every Game, All time.</h3>
-      <div class="overflow-x-auto" id="plotly-container">
-        <div id="plotly-chart"></div>
+      <h4>{{ total_unique_scores }} Unique Scores.</h4>
+      <div class="scrollable-container">
+        <div class="plotly-container">
+          <div id="plotly-chart"></div>
+        </div>
       </div>
         <div class="container my-5">
           <div class="p-5 text-center bg-body-tertiary rounded-3">
             <h1 class="text-body-emphasis">Welcome to College Football Scorigami</h1>
             <p class="lead">
-              College Football Scorigami is the accumulation of all college football scores since 1869. A whopping {{ game_count }} games!
+              College Football Scorigami is the accumulation of all college football scores since 1869. A whopping {{ total_games }} games!
               <br>To use the table, simple hover over or click on any grid block, and you can see how many games have occurred with that score!
             </p>
             <p class="lead">
@@ -202,7 +224,7 @@
           <div class="p-5 text-center bg-body-tertiary rounded-3">
             <h1 class="text-body-emphasis">Missing Scores</h1>
             <p class="lead">
-              7 scores are missing from this graph due to it skewing the length too much, they're still available in the database so feel free to search them! They are:
+              Plenty of scores are missing from this graph due to it skewing the length too much, they're still available in the database so feel free to search them! Just a few fun ones for you to look up here:
               167:0, 178:0, 179:0, 183:0, 205:0, 206:0, and lastly the highest scoring game ever, 222:0
             </p>
           </div>
