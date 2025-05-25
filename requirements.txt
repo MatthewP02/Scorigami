@@ -10,3 +10,5 @@ python-dotenv==1.1.0
 Requests==2.32.3
 scikit_learn==1.6.1
 tweepy==4.15.0
+gunicorn==21.2.0
+whitenoise==6.6.0
